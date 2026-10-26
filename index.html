@@ -25,6 +25,7 @@ button{border:0;border-radius:11px;padding:13px;font-size:16px;font-weight:700;c
 .secondary{background:#e8ecef;color:#17202a}
 .result{padding:12px;border:1px solid #e0e4e8;border-radius:12px;margin-top:8px;display:flex;justify-content:space-between}
 .value{font-weight:800;direction:ltr}
+.red{color:#d32f2f;font-weight:700;font-size:12px}
 .note{font-size:11px;color:#777;line-height:1.8;margin-top:12px}
 .history h2{font-size:16px}.item{font-size:12px;border-top:1px solid #eee;padding:9px 0}.empty{color:#777;font-size:12px}
 </style>
@@ -52,7 +53,8 @@ button{border:0;border-radius:11px;padding:13px;font-size:16px;font-weight:700;c
 </div>
 <div class="result"><span>وزن خالص محاسباتی</span><span class="value" id="tnet">—</span></div>
 <div class="result"><span>ضخامت محاسباتی</span><span class="value" id="tres">—</span></div>
-<div class="note">وزن خالص = وزن با پالت − (عرض × طول × 0.000018)<br>ضخامت = وزن خالص ÷ تعداد ÷ طول ÷ عرض ÷ 7.85 × 1,000,000</div>
+<div class="result"><span>ارتفاع پک <span class="red">(بدون باوه)</span></span><span class="value" id="tpack">—</span></div>
+<div class="note">وزن خالص = وزن با پالت − (عرض × طول × 0.000018)<br>ضخامت = وزن خالص ÷ تعداد ÷ طول ÷ عرض ÷ 7.85 × 1,000,000<br>ارتفاع پک = ضخامت × تعداد شیت</div>
 </div>
 
 <div id="weightTab" class="panel">
@@ -87,12 +89,14 @@ function showTab(id,btn){
 }
 function calcThickness(){
  const w=n('tw'),l=n('tl'),c=n('tc'),g=n('tg');
- if(!(w>0&&l>0&&c>0&&g>=0)){document.getElementById('tnet').textContent='—';document.getElementById('tres').textContent='—';return null}
+ if(!(w>0&&l>0&&c>0&&g>=0)){document.getElementById('tnet').textContent='—';document.getElementById('tres').textContent='—';document.getElementById('tpack').textContent='—';return null}
  const net=g-(w*l*0.000018);
  const t=net/c/l/w/7.85*1000000;
  document.getElementById('tnet').textContent=fmt(net)+' kg';
+ const h=t*c;
  document.getElementById('tres').textContent=fmt(t,4)+' mm';
- return {type:'ضخامت',w,l,c,g,net,t};
+ document.getElementById('tpack').textContent=fmt(h,2)+' mm';
+ return {type:'ضخامت',w,l,c,g,net,t,h};
 }
 function calcWeight(){
  const t=n('wt'),w=n('ww'),l=n('wl'),c=n('wc');
@@ -106,7 +110,7 @@ function calcWeight(){
 function clearTab(x){
  const ids=x==='t'?['tw','tl','tc','tg']:['wt','ww','wl','wc'];
  ids.forEach(id=>document.getElementById(id).value='');
- if(x==='t'){document.getElementById('tnet').textContent='—';document.getElementById('tres').textContent='—'}
+ if(x==='t'){document.getElementById('tnet').textContent='—';document.getElementById('tres').textContent='—';document.getElementById('tpack').textContent='—'}
  else{document.getElementById('wnet').textContent='—';document.getElementById('wgross').textContent='—'}
 }
 function saveRecord(r){
@@ -122,7 +126,7 @@ function render(){
  el.className='';
  el.innerHTML=h.map((x,i)=>x.type==='وزن'
  ? `<div class="item">#${i+1} — وزن | ضخامت ${fmt(x.t,4)} mm | عرض ${fmt(x.w,2)} | طول ${fmt(x.l,2)} | تعداد ${fmt(x.c,0)} | خالص ${fmt(x.net)} kg | با پالت ${fmt(x.gross)} kg</div>`
- : `<div class="item">#${i+1} — ضخامت | عرض ${fmt(x.w,2)} | طول ${fmt(x.l,2)} | تعداد ${fmt(x.c,0)} | خالص ${fmt(x.net)} kg | ضخامت ${fmt(x.t,4)} mm</div>`
+ : `<div class="item">#${i+1} — ضخامت | عرض ${fmt(x.w,2)} | طول ${fmt(x.l,2)} | تعداد ${fmt(x.c,0)} | خالص ${fmt(x.net)} kg | ضخامت ${fmt(x.t,4)} mm | ارتفاع پک ${fmt(x.t*x.c,2)} mm <span class="red">(بدون باوه)</span></div>`
  ).join('');
 }
 ['tw','tl','tc','tg'].forEach(id=>document.getElementById(id).addEventListener('input',calcThickness));
