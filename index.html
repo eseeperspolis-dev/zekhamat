@@ -4,7 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#17202a">
-<link rel="manifest" href="manifest.json">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="وزن و ضخامت">
 <title>محاسبه وزن و ضخامت</title>
 <style>
 *{box-sizing:border-box}
@@ -13,8 +19,8 @@ main{max-width:540px;margin:auto;padding:14px}
 .card{background:#fff;border-radius:20px;padding:18px;margin:10px 0;box-shadow:0 5px 20px #0001}
 h1{text-align:center;font-size:22px;margin:2px 0 4px}
 .sub{text-align:center;color:#6b7280;font-size:12px;margin:0 0 14px}
-.tabs{display:grid;grid-template-columns:1fr 1fr;gap:7px;background:#eef1f4;padding:5px;border-radius:13px;margin-bottom:16px}
-.tab{border:0;background:transparent;color:#555;padding:11px 5px;border-radius:10px;font-size:14px;font-weight:700}
+.tabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;background:#eef1f4;padding:5px;border-radius:13px;margin-bottom:16px}
+.tab{border:0;background:transparent;color:#555;padding:11px 3px;border-radius:10px;font-size:12.5px;font-weight:700}
 .tab.active{background:#17202a;color:#fff}
 .panel{display:none}.panel.active{display:block}
 label{font-weight:700;font-size:13px;display:block;margin:11px 0 5px}
@@ -28,6 +34,14 @@ button{border:0;border-radius:11px;padding:13px;font-size:16px;font-weight:700;c
 .red{color:#d32f2f;font-weight:700;font-size:12px}
 .note{font-size:11px;color:#777;line-height:1.8;margin-top:12px}
 .history h2{font-size:16px}.item{font-size:12px;border-top:1px solid #eee;padding:9px 0}.empty{color:#777;font-size:12px}
+.big{font-size:30px;font-weight:800;direction:ltr;text-align:center;margin:10px 0 4px}.big small{font-size:12px;font-weight:400;color:#6b7280}
+.intro{background:#e6f0f8;border-right:4px solid #1f5f8b;border-radius:10px;padding:10px 12px;font-size:12px;line-height:1.9;margin-bottom:6px}
+.sec{font-weight:800;font-size:13px;margin:16px 0 2px}
+.cand{border:1px solid #e0e4e8;border-radius:12px;padding:10px 12px;margin-top:10px}.cand h3{margin:0 0 4px;font-size:14px;display:flex;justify-content:space-between;gap:8px}
+.tag{font-size:11px;padding:1px 9px;border-radius:99px;font-weight:700;white-space:nowrap}
+.ok{background:#e3f3ea;color:#17734a}.warn{background:#fbf0d4;color:#9a6a00}.bad{background:#fbe4e2;color:#b3261e}
+.rec{margin-top:12px;padding:10px 12px;border-radius:10px;font-weight:700;font-size:13px;line-height:1.8}
+.row{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid #eee;font-size:12.5px}.row b{direction:ltr}
 </style>
 </head>
 <body>
@@ -39,6 +53,7 @@ button{border:0;border-radius:11px;padding:13px;font-size:16px;font-weight:700;c
 <div class="tabs">
 <button class="tab active" onclick="showTab('thicknessTab',this)">محاسبه ضخامت</button>
 <button class="tab" onclick="showTab('weightTab',this)">محاسبه وزن</button>
+<button class="tab" onclick="showTab('decisionTab',this)">نوسان و تصمیم</button>
 </div>
 
 <div id="thicknessTab" class="panel active">
@@ -55,6 +70,40 @@ button{border:0;border-radius:11px;padding:13px;font-size:16px;font-weight:700;c
 <div class="result"><span>ضخامت محاسباتی</span><span class="value" id="tres">—</span></div>
 <div class="result"><span>ارتفاع پک <span class="red">(بدون باوه)</span></span><span class="value" id="tpack">—</span></div>
 <div class="note">وزن خالص = وزن با پالت − (عرض × طول × 0.000018)<br>ضخامت = وزن خالص ÷ تعداد ÷ طول ÷ عرض ÷ 7.85 × 1,000,000<br>ارتفاع پک = ضخامت × تعداد شیت</div>
+</div>
+
+<div id='decisionTab' class='panel'>
+<div class='intro'><b>هیچ کلافی بدون نوسان ضخامت نیست.</b> عدد محاسبه‌شده از وزن فقط <b>میانگین</b> است. در محصولات قلع‌اندود، در بهترین حالت ضخامت واقعی همیشه حدود <b>۵٪ بالا و ۵٪ پایین</b> میانگین نوسان می‌کند (قله تا دره حدود ۱۰٪). پس هر ضخامت را با باند کامل بسنجید، و اگر اندازه‌گیری با ایکس‌ری ممکن نیست، بر همین اساس تصمیم بگیرید.</div>
+<div class='sec'>داده‌های پک</div>
+<div class='grid'>
+<div><label>وزن با پالت (kg)</label><input id='dm' type='number' step='any' inputmode='decimal'></div>
+<div><label>تعداد شیت</label><input id='dn' type='number' inputmode='numeric'></div>
+<div><label>طول (mm)</label><input id='dL' type='number' step='any' inputmode='decimal'></div>
+<div><label>عرض (mm)</label><input id='dW' type='number' step='any' inputmode='decimal'></div>
+<div><label>پوشش قلع دو طرف (g/m²)</label><input id='dc' type='number' step='any' inputmode='decimal' value='5.6'></div>
+<div><label>چگالی (g/cm³)</label><input id='drho' type='number' step='any' inputmode='decimal' value='7.85'></div>
+</div>
+<div class='sec'>پالت</div>
+<div class='note' style='margin-top:0'>تخته هم‌اندازه شیت، چهارتراش در امتداد عرض (۲ عدد، و ۳ عدد اگر طول > ۸۰۰ mm) و پلاستیک دولایه ۲۰ cm بزرگ‌تر در طول و عرض.</div>
+<div class='grid'>
+<div style='grid-column:1/-1'><label>وزن واقعی پالت (kg، اختیاری؛ خالی = محاسبه با فرمول)</label><input id='dpw' type='number' step='any' inputmode='decimal'></div>
+<div><label>وزن تخته (kg/m²)</label><input id='drb' type='number' step='any' inputmode='decimal' value='11.36'></div>
+<div><label>وزن چهارتراش (kg/m)</label><input id='drw' type='number' step='any' inputmode='decimal' value='2'></div>
+<div style='grid-column:1/-1'><label>ضخامت هر لایه پلاستیک (µm، دولایه)</label><input id='dpt' type='number' step='any' inputmode='decimal' value='100'></div>
+</div>
+<div class='sec'>مقایسه با ضخامت اسمی</div>
+<div class='grid'>
+<div><label>اسمی گزینه اول (mm)</label><input id='dc1' type='number' step='any' inputmode='decimal' placeholder='0.21'></div>
+<div><label>اسمی گزینه دوم (mm)</label><input id='dc2' type='number' step='any' inputmode='decimal' placeholder='0.22'></div>
+<div><label>تلرانس ± (%)</label><input id='dtol' type='number' step='any' inputmode='decimal' value='5'></div>
+<div><label>نوسان ± (%)</label><input id='da' type='number' step='any' inputmode='decimal' value='5'></div>
+<div><label>انحراف معیار σ (%)</label><input id='dsg' type='number' step='any' inputmode='decimal' value='2'></div>
+<div><label>عدم قطعیت وزنی ± (%)</label><input id='du' type='number' step='any' inputmode='decimal' value='0.5'></div>
+</div>
+<div class='big' id='dt'>—</div>
+<div id='drows'></div><div id='dcands'></div><div id='drec' class='rec' style='display:none'></div>
+<div id='dchart'></div>
+<div class='note'>درصد خارج از تلرانس با فرض توزیع نرمال با σ واردشده است. تلرانس را از سفارش یا JIS G3303 تأیید کنید.</div>
 </div>
 
 <div id="weightTab" class="panel">
@@ -115,13 +164,13 @@ function clearTab(x){
 }
 function saveRecord(r){
  if(!r)return;
- let h=JSON.parse(localStorage.getItem('hist')||'[]');h.unshift(r);h=h.slice(0,10);
- localStorage.setItem('hist',JSON.stringify(h));render();
+ let h=[];try{h=JSON.parse(localStorage.getItem('hist')||'[]')}catch(e){}h.unshift(r);h=h.slice(0,10);
+ try{localStorage.setItem('hist',JSON.stringify(h))}catch(e){}render();
 }
 function saveThickness(){saveRecord(calcThickness())}
 function saveWeight(){saveRecord(calcWeight())}
 function render(){
- const h=JSON.parse(localStorage.getItem('hist')||'[]'),el=document.getElementById('hist');
+ let h=[];try{h=JSON.parse(localStorage.getItem('hist')||'[]')}catch(e){}const el=document.getElementById('hist');
  if(!h.length){el.className='empty';el.textContent='هنوز محاسبه‌ای ذخیره نشده است.';return}
  el.className='';
  el.innerHTML=h.map((x,i)=>x.type==='وزن'
@@ -131,8 +180,76 @@ function render(){
 }
 ['tw','tl','tc','tg'].forEach(id=>document.getElementById(id).addEventListener('input',calcThickness));
 ['wt','ww','wl','wc'].forEach(id=>document.getElementById(id).addEventListener('input',calcWeight));
+function erf(x){const s=x<0?-1:1;x=Math.abs(x);const t=1/(1+0.3275911*x);const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);return s*y}
+function tail(z){return 0.5*(1-erf(z/Math.SQRT2))}
+const gv=id=>{const v=document.getElementById(id).value;return v===''?NaN:Number(v)};
+const drow=(a,b)=>`<div class='row'><span>${a}</span><b>${b}</b></div>`;
+function drawChart(t,a,r){
+ const lo=Math.min(r.lo,t-a),hi=Math.max(r.hi,t+a),pad=(hi-lo)*0.12,Lo=lo-pad,Hi=hi+pad;
+ const y=v=>(110-(v-Lo)/(Hi-Lo)*100).toFixed(1);
+ let p='',red='',prevOut=false;
+ for(let i=0;i<=240;i++){
+  const x=(10+i*1.25).toFixed(1),v=t+a*Math.sin(i/240*4*Math.PI),out=v>r.hi||v<r.lo;
+  p+=(i?'L':'M')+x+' '+y(v);
+  if(out)red+=(prevOut?'L':'M')+x+' '+y(v);
+  prevOut=out;
+ }
+ document.getElementById('dchart').innerHTML=`<svg viewBox='0 0 320 125' style='width:100%;direction:ltr;margin-top:12px' role='img'>
+<line x1='10' x2='310' y1='${y(r.hi)}' y2='${y(r.hi)}' stroke='#b3261e' stroke-dasharray='4 3'/>
+<line x1='10' x2='310' y1='${y(r.lo)}' y2='${y(r.lo)}' stroke='#b3261e' stroke-dasharray='4 3'/>
+<line x1='10' x2='310' y1='${y(r.nom)}' y2='${y(r.nom)}' stroke='#17734a' stroke-width='1.5'/>
+<line x1='10' x2='310' y1='${y(t)}' y2='${y(t)}' stroke='#888' stroke-dasharray='2 3'/>
+<path d='${p}' fill='none' stroke='#1f78b4' stroke-width='2'/>
+<path d='${red}' fill='none' stroke='#b3261e' stroke-width='3'/>
+<text x='312' y='${Number(y(r.hi))-3}' font-size='8' text-anchor='end' fill='#b3261e'>${r.hi.toFixed(3)}</text>
+<text x='312' y='${Number(y(r.lo))+9}' font-size='8' text-anchor='end' fill='#b3261e'>${r.lo.toFixed(3)}</text>
+<text x='12' y='${Number(y(r.nom))-3}' font-size='8' fill='#17734a'>nominal ${r.nom.toFixed(3)}</text>
+<text x='12' y='${Number(y(t))+9}' font-size='8' fill='#888'>mean ${t.toFixed(4)}</text></svg>
+<div class='note'>نمودار برای گزینه پیشنهادی (${r.nom.toFixed(3)}): خط سبز ضخامت اسمی، خط‌چین قرمز حدود تلرانس، موج آبی نوسان حول میانگین (خط‌چین خاکستری) و بخش قرمز بیرون از تلرانس. شکل سینوسی نمادین است و فقط جای باند را نشان می‌دهد؛ درصد خارج از تلرانس از توزیع نرمال می‌آید.</div>`;
+}
+function calcDecision(){
+ const $=id=>document.getElementById(id);
+ const m=gv('dm'),N=gv('dn'),L=gv('dL'),W=gv('dW'),rho=gv('drho');
+ let c=gv('dc'),pw=gv('dpw'),rb=gv('drb'),rw=gv('drw'),pt=gv('dpt'),tol=gv('dtol'),aP=gv('da'),sgP=gv('dsg'),uP=gv('du');
+ const T=$('dt'),R=$('drows'),C=$('dcands'),Rec=$('drec');
+ const stop=()=>{T.textContent='—';R.innerHTML='';C.innerHTML='';Rec.style.display='none';$('dchart').innerHTML=''};
+ if(!(m>0&&N>0&&L>0&&W>0&&rho>0)){stop();return}
+ if(!(c>=0))c=0;if(!(rb>0))rb=11.36;if(!(rw>0))rw=2;if(!(pt>=0))pt=100;if(!(tol>0))tol=5;if(!(aP>=0))aP=2.5;if(!(sgP>=0))sgP=2;if(!(uP>=0))uP=0.5;
+ const A=L*W/1e6,nr=L>800?3:2,mb=A*rb,mr=nr*(W/1000)*rw,mp=2*(L+200)*(W+200)/1e6*(pt*1e-6)*920;
+ const pal=pw>0?pw:mb+mr+mp,net=m-pal,steel=net*1000/N-A*c;
+ if(!(steel>0)){stop();R.innerHTML=`<div class='red'>جرم فولاد منفی شد؛ ورودی‌ها را بررسی کنید.</div>`;return}
+ const t=steel/(rho*A*1e4)*10,a=t*aP/100,sd=t*sgP/100;
+ T.innerHTML=`${(t*1000).toFixed(1)} <small>µm</small> <small>میانگین (${t.toFixed(4)} mm)</small>`;
+ R.innerHTML=drow('تعداد چهارتراش',`${nr} عدد (طول ${L}${L>800?' > ':' ≤ '}800 mm)`)+drow('وزن پالت'+(pw>0?' (ورودی دستی)':''),pal.toFixed(1)+' kg')+drow('وزن خالص ورق و قلع',net.toFixed(1)+' kg')+drow('باند واقعی ضخامت (قله تا دره)',`${(t-a).toFixed(4)} تا ${(t+a).toFixed(4)} mm`);
+ const res=[gv('dc1'),gv('dc2')].filter(x=>x>0).map(nom=>{
+  const dev=(t-nom)/nom*100,lo=nom*(1-tol/100),hi=nom*(1+tol/100);
+  const out=Math.min(1,sd>0?tail((hi-t)/sd)+tail((t-lo)/sd):((t>hi||t<lo)?1:0));
+  const need=Math.abs(dev)+aP+uP,margin=tol-need;
+  let cls,tx;
+  if(out<=0.05){cls='ok';tx='بیش از ۹۵٪ طول داخل تلرانس'}else if(out<=0.20){cls='warn';tx='۵ تا ۲۰٪ طول خارج از تلرانس'}else{cls='bad';tx='خارج از تلرانس'}
+  return {nom,dev,lo,hi,out,need,margin,cls,tx};
+ });
+ C.innerHTML=res.map(r=>`<div class='cand'><h3><span>اسمی ${r.nom.toFixed(3)} mm</span><span class='tag ${r.cls}'>${r.tx}</span></h3>`+drow('انحراف میانگین',(r.dev>=0?'+':'')+r.dev.toFixed(2)+'%')+drow(`بازه مجاز (±${tol}%)`,`${r.lo.toFixed(4)} تا ${r.hi.toFixed(4)}`)+drow('سهم تقریبی طول خارج از تلرانس','≈ '+(r.out*100).toFixed(0)+'٪')+drow('انحراف + نوسان + عدم قطعیت',r.need.toFixed(2)+'%')+'</div>').join('');
+ if(res.length){
+  const b=res.slice().sort((x,y)=>x.out-y.out||y.margin-x.margin)[0];
+  Rec.style.display='block';
+  if(b.out<=0.05){Rec.className='rec ok';Rec.textContent=`پیشنهاد: ضخامت ${b.nom.toFixed(3)} mm. بیش از ۹۵٪ طول کلاف داخل تلرانس می‌ماند.`}
+  else if(b.out<=0.20){Rec.className='rec warn';Rec.textContent=`نزدیک‌ترین گزینه ${b.nom.toFixed(3)} mm است ولی حاشیه کافی نیست. در صورت امکان با ایکس‌ری یا میکرومتر تأیید کنید.`}
+  else{Rec.className='rec bad';Rec.textContent=`هیچ‌کدام کاملاً داخل تلرانس نیست. کمترین خروج مربوط به ${b.nom.toFixed(3)} mm با حدود ${(b.out*100).toFixed(0)}٪ طول خارج از رنج است. قبل از تصمیم با ایکس‌ری یا سفارش مشتری تطبیق دهید.`}
+ }else Rec.style.display='none';
+ if(res.length)drawChart(t,a,res.slice().sort((x,y)=>x.out-y.out||y.margin-x.margin)[0]);else $('dchart').innerHTML='';
+}
+['dm','dn','dL','dW','dc','drho','dpw','drb','drw','dpt','dc1','dc2','dtol','da','dsg','du'].forEach(id=>document.getElementById(id).addEventListener('input',calcDecision));
 render();
-if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+</script>
+<script>
+if('serviceWorker' in navigator){
+ window.addEventListener('load',function(){
+  var had=!!navigator.serviceWorker.controller,reloaded=false;
+  navigator.serviceWorker.addEventListener('controllerchange',function(){if(had&&!reloaded){reloaded=true;location.reload()}});
+  navigator.serviceWorker.register('sw.js').catch(function(){});
+ });
+}
 </script>
 </body>
 </html>
