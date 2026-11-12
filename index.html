@@ -42,6 +42,8 @@ button{border:0;border-radius:11px;padding:13px;font-size:16px;font-weight:700;c
 .ok{background:#e3f3ea;color:#17734a}.warn{background:#fbf0d4;color:#9a6a00}.bad{background:#fbe4e2;color:#b3261e}
 .rec{margin-top:12px;padding:10px 12px;border-radius:10px;font-weight:700;font-size:13px;line-height:1.8}
 .row{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid #eee;font-size:12.5px}.row b{direction:ltr}
+.calc{border-color:#17734a;background:#e3f3ea;color:#17734a;font-weight:800}
+select{width:100%;padding:12px;border:1px solid #ccd2d8;border-radius:11px;font-size:18px;background:#fff;color:#17202a;text-align:center;text-align-last:center}select:disabled{opacity:1;background:#f3f5f7}
 </style>
 </head>
 <body>
@@ -69,11 +71,11 @@ button{border:0;border-radius:11px;padding:13px;font-size:16px;font-weight:700;c
 <div class="result"><span>وزن خالص محاسباتی</span><span class="value" id="tnet">—</span></div>
 <div class="result"><span>ضخامت محاسباتی</span><span class="value" id="tres">—</span></div>
 <div class="result"><span>ارتفاع پک <span class="red">(بدون باوه)</span></span><span class="value" id="tpack">—</span></div>
-<div class="note">وزن خالص = وزن با پالت − (عرض × طول × 0.000018)<br>ضخامت = وزن خالص ÷ تعداد ÷ طول ÷ عرض ÷ 7.85 × 1,000,000<br>ارتفاع پک = ضخامت × تعداد شیت</div>
+<div class="note">وزن خالص = وزن با پالت − وزن پالت (تخته، چهارتراش و پلاستیک دولایه؛ مثل تب نوسان و تصمیم)<br>ضخامت = (وزن خالص ÷ تعداد − پوشش قلع ۵٫۶ g/m²) ÷ (سطح × 7.85)<br>ارتفاع پک = ضخامت × تعداد شیت</div>
 </div>
 
 <div id='decisionTab' class='panel'>
-<div class='intro'><b>هیچ کلافی بدون نوسان ضخامت نیست.</b> عدد محاسبه‌شده از وزن فقط <b>میانگین</b> است. در محصولات قلع‌اندود، در بهترین حالت ضخامت واقعی همیشه حدود <b>۵٪ بالا و ۵٪ پایین</b> میانگین نوسان می‌کند (قله تا دره حدود ۱۰٪). پس هر ضخامت را با باند کامل بسنجید، و اگر اندازه‌گیری با ایکس‌ری ممکن نیست، بر همین اساس تصمیم بگیرید.</div>
+<div class='intro'><b>هیچ کلافی بدون نوسان ضخامت نیست.</b> عدد محاسبه‌شده از وزن فقط <b>میانگین</b> است. در محصولات قلع‌اندود، در بهترین حالت ضخامت واقعی همیشه حدود <b>۵٪ بالا و ۵٪ پایین</b> میانگین نوسان می‌کند (قله تا دره حدود ۱۰٪). پس هر ضخامت را با باند کامل بسنجید، و اگر اندازه‌گیری با ایکس‌ری ممکن نیست، بر همین اساس تصمیم بگیرید.<br><b>نکته:</b> یکی از عوامل دقت میانگین ضخامت این است که باند نوسان ضخامت در سراسر کلاف افقی باشد. اگر باند از ابتدا تا انتهای کلاف شیب نزولی یا صعودی داشته باشد، دقت میانگین کمتر می‌شود.</div>
 <div class='sec'>داده‌های پک</div>
 <div class='grid'>
 <div><label>وزن با پالت (kg)</label><input id='dm' type='number' step='any' inputmode='decimal'></div>
@@ -95,7 +97,8 @@ button{border:0;border-radius:11px;padding:13px;font-size:16px;font-weight:700;c
 <div class='grid'>
 <div><label>اسمی گزینه اول (mm)</label><input id='dc1' type='number' step='any' inputmode='decimal' placeholder='0.21'></div>
 <div><label>اسمی گزینه دوم (mm)</label><input id='dc2' type='number' step='any' inputmode='decimal' placeholder='0.22'></div>
-<div><label>تلرانس ± (%)</label><input id='dtol' type='number' step='any' inputmode='decimal' value='5'></div>
+<div><label>تلرانس حداقل (−)</label><select id='dtmin'><option value='5'>−۵٪</option><option value='7'>−۷٪</option></select></div>
+<div><label>تلرانس حداکثر (+)</label><select id='dtmax' disabled><option value='5'>+۵٪ (ثابت)</option></select></div>
 <div><label>نوسان ± (%)</label><input id='da' type='number' step='any' inputmode='decimal' value='5'></div>
 <div><label>انحراف معیار σ (%)</label><input id='dsg' type='number' step='any' inputmode='decimal' value='2'></div>
 <div><label>عدم قطعیت وزنی ± (%)</label><input id='du' type='number' step='any' inputmode='decimal' value='0.5'></div>
@@ -103,6 +106,7 @@ button{border:0;border-radius:11px;padding:13px;font-size:16px;font-weight:700;c
 <div class='big' id='dt'>—</div>
 <div id='drows'></div><div id='dcands'></div><div id='drec' class='rec' style='display:none'></div>
 <div id='dchart'></div>
+<div class='note'>جداسازی ایکس‌ری بر اساس تلرانس حداقل (−۵٪ یا −۷٪) و حداکثر (+۵٪) نسبت به ضخامت مبنا انجام می‌شود؛ پس حدود باند از همین تلرانس‌ها می‌آید و میانگین واقعی پک باید حدود وسط باند باشد.<br>اگر تعداد شیت پک‌های یک کلاف یکسان باشد، وزن آن‌ها معمولاً بیش از ۵ تا ۱۰ کیلوگرم در هر ۱۵۰۰ کیلوگرم با هم اختلاف ندارد؛ اختلاف بیشتر یعنی مشکل در شمارش یا ضخامت.</div>
 <div class='note'>درصد خارج از تلرانس با فرض توزیع نرمال با σ واردشده است. تلرانس را از سفارش یا JIS G3303 تأیید کنید.</div>
 </div>
 
@@ -111,14 +115,16 @@ button{border:0;border-radius:11px;padding:13px;font-size:16px;font-weight:700;c
 <label>عرض (mm)</label><input id="ww" type="number" inputmode="decimal">
 <label>طول (mm)</label><input id="wl" type="number" inputmode="decimal">
 <label>تعداد شیت</label><input id="wc" type="number" inputmode="numeric">
-<button class="primary" onclick="calcWeight()">محاسبه وزن</button>
+<label>وزن با پالت (kg)</label><input id="wg" type="number" inputmode="decimal">
+<div class="note" style="margin-top:6px">یکی از دو مقدار تعداد یا وزن را وارد کنید؛ دیگری محاسبه و با رنگ سبز نشان داده می‌شود.</div>
+<button class="primary" onclick="calcWeight()">محاسبه وزن / تعداد</button>
 <div class="grid" style="margin-top:9px">
 <button class="secondary" onclick="clearTab('w')">پاک کردن</button>
 <button class="secondary" onclick="saveWeight()">ذخیره محاسبه</button>
 </div>
 <div class="result"><span>وزن خالص محاسباتی</span><span class="value" id="wnet">—</span></div>
 <div class="result"><span>وزن با پالت محاسباتی</span><span class="value" id="wgross">—</span></div>
-<div class="note">وزن خالص = ضخامت × تعداد × طول × عرض × 7.85 ÷ 1,000,000<br>وزن با پالت = وزن خالص + (عرض × طول × 0.000018)</div>
+<div class="note">وزن خالص = تعداد × (ضخامت × طول × عرض × 7.85 ÷ 1,000,000 + پوشش قلع)<br>وزن با پالت = وزن خالص + وزن پالت (تخته، چهارتراش و پلاستیک دولایه؛ مثل تب نوسان و تصمیم)</div>
 </div>
 </div>
 
@@ -130,6 +136,8 @@ button{border:0;border-radius:11px;padding:13px;font-size:16px;font-weight:700;c
 
 <script>
 const n=id=>Number(document.getElementById(id).value);
+const BOARD=11.36,RUNNER=2,PLAST=100,TIN=5.6,RHO=7.85;let wLast=null;
+function palletKg(w,l){const A=w*l/1e6,nr=l>800?3:2;return A*BOARD+nr*(w/1000)*RUNNER+2*(l+200)*(w+200)/1e6*(PLAST*1e-6)*920}
 function fmt(x,d=3){return Number.isFinite(x)?x.toLocaleString('en-US',{maximumFractionDigits:d}):'—'}
 function showTab(id,btn){
  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
@@ -139,8 +147,9 @@ function showTab(id,btn){
 function calcThickness(){
  const w=n('tw'),l=n('tl'),c=n('tc'),g=n('tg');
  if(!(w>0&&l>0&&c>0&&g>=0)){document.getElementById('tnet').textContent='—';document.getElementById('tres').textContent='—';document.getElementById('tpack').textContent='—';return null}
- const net=g-(w*l*0.000018);
- const t=net/c/l/w/7.85*1000000;
+ const A=w*l/1e6,net=g-palletKg(w,l);
+ const t=(net*1000/c-A*TIN)/(RHO*A*1e4)*10;
+ if(!(t>0)){document.getElementById('tnet').textContent=fmt(net)+' kg';document.getElementById('tres').textContent='—';document.getElementById('tpack').textContent='—';return null}
  document.getElementById('tnet').textContent=fmt(net)+' kg';
  const h=t*c;
  document.getElementById('tres').textContent=fmt(t,4)+' mm';
@@ -148,19 +157,28 @@ function calcThickness(){
  return {type:'ضخامت',w,l,c,g,net,t,h};
 }
 function calcWeight(){
- const t=n('wt'),w=n('ww'),l=n('wl'),c=n('wc');
- if(!(t>0&&w>0&&l>0&&c>0)){document.getElementById('wnet').textContent='—';document.getElementById('wgross').textContent='—';return null}
- const net=t*c*l*w*7.85/1000000;
- const gross=net+(w*l*0.000018);
+ const t=n('wt'),w=n('ww'),l=n('wl'),ec=document.getElementById('wc'),eg=document.getElementById('wg');
+ [ec,eg].forEach(e=>e.classList.remove('calc'));
+ const cv=ec.value===''?0:Number(ec.value),gvv=eg.value===''?0:Number(eg.value);
+ let mode=wLast;
+ if(mode==='c'&&!(cv>0))mode=gvv>0?'g':null;
+ if(mode==='g'&&!(gvv>0))mode=cv>0?'c':null;
+ if(!mode)mode=cv>0?'c':(gvv>0?'g':null);
+ let c=0,gross=0,net=0;
+ if(!(t>0&&w>0&&l>0&&mode)){document.getElementById('wnet').textContent='—';document.getElementById('wgross').textContent='—';return null}
+ const A=w*l/1e6,pal=palletKg(w,l),per=t*l*w*RHO/1e6+A*TIN/1000;
+ if(mode==='c'){c=cv;net=c*per;gross=net+pal;eg.value=Math.round(gross*100)/100;eg.classList.add('calc')}
+ else{gross=gvv;net=gross-pal;c=Math.round(net/per);if(!(c>0)){ec.value='';document.getElementById('wnet').textContent='—';document.getElementById('wgross').textContent='—';return null}ec.value=c;ec.classList.add('calc')}
+ 
  document.getElementById('wnet').textContent=fmt(net)+' kg';
  document.getElementById('wgross').textContent=fmt(gross)+' kg';
  return {type:'وزن',t,w,l,c,net,gross};
 }
 function clearTab(x){
- const ids=x==='t'?['tw','tl','tc','tg']:['wt','ww','wl','wc'];
+ const ids=x==='t'?['tw','tl','tc','tg']:['wt','ww','wl','wc','wg'];
  ids.forEach(id=>document.getElementById(id).value='');
  if(x==='t'){document.getElementById('tnet').textContent='—';document.getElementById('tres').textContent='—';document.getElementById('tpack').textContent='—'}
- else{document.getElementById('wnet').textContent='—';document.getElementById('wgross').textContent='—'}
+ else{document.getElementById('wnet').textContent='—';document.getElementById('wgross').textContent='—';wLast=null;['wc','wg'].forEach(id=>document.getElementById(id).classList.remove('calc'))}
 }
 function saveRecord(r){
  if(!r)return;
@@ -179,7 +197,9 @@ function render(){
  ).join('');
 }
 ['tw','tl','tc','tg'].forEach(id=>document.getElementById(id).addEventListener('input',calcThickness));
-['wt','ww','wl','wc'].forEach(id=>document.getElementById(id).addEventListener('input',calcWeight));
+['wt','ww','wl'].forEach(id=>document.getElementById(id).addEventListener('input',calcWeight));
+document.getElementById('wc').addEventListener('input',()=>{wLast='c';calcWeight()});
+document.getElementById('wg').addEventListener('input',()=>{wLast='g';calcWeight()});
 function erf(x){const s=x<0?-1:1;x=Math.abs(x);const t=1/(1+0.3275911*x);const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);return s*y}
 function tail(z){return 0.5*(1-erf(z/Math.SQRT2))}
 const gv=id=>{const v=document.getElementById(id).value;return v===''?NaN:Number(v)};
@@ -210,26 +230,26 @@ function drawChart(t,a,r){
 function calcDecision(){
  const $=id=>document.getElementById(id);
  const m=gv('dm'),N=gv('dn'),L=gv('dL'),W=gv('dW'),rho=gv('drho');
- let c=gv('dc'),pw=gv('dpw'),rb=gv('drb'),rw=gv('drw'),pt=gv('dpt'),tol=gv('dtol'),aP=gv('da'),sgP=gv('dsg'),uP=gv('du');
+ let c=gv('dc'),pw=gv('dpw'),rb=gv('drb'),rw=gv('drw'),pt=gv('dpt'),tmin=gv('dtmin'),tmax=gv('dtmax'),aP=gv('da'),sgP=gv('dsg'),uP=gv('du');
  const T=$('dt'),R=$('drows'),C=$('dcands'),Rec=$('drec');
  const stop=()=>{T.textContent='—';R.innerHTML='';C.innerHTML='';Rec.style.display='none';$('dchart').innerHTML=''};
  if(!(m>0&&N>0&&L>0&&W>0&&rho>0)){stop();return}
- if(!(c>=0))c=0;if(!(rb>0))rb=11.36;if(!(rw>0))rw=2;if(!(pt>=0))pt=100;if(!(tol>0))tol=5;if(!(aP>=0))aP=2.5;if(!(sgP>=0))sgP=2;if(!(uP>=0))uP=0.5;
+ if(!(c>=0))c=0;if(!(rb>0))rb=11.36;if(!(rw>0))rw=2;if(!(pt>=0))pt=100;if(!(tmin>0))tmin=5;if(!(tmax>0))tmax=5;if(!(aP>=0))aP=2.5;if(!(sgP>=0))sgP=2;if(!(uP>=0))uP=0.5;
  const A=L*W/1e6,nr=L>800?3:2,mb=A*rb,mr=nr*(W/1000)*rw,mp=2*(L+200)*(W+200)/1e6*(pt*1e-6)*920;
  const pal=pw>0?pw:mb+mr+mp,net=m-pal,steel=net*1000/N-A*c;
  if(!(steel>0)){stop();R.innerHTML=`<div class='red'>جرم فولاد منفی شد؛ ورودی‌ها را بررسی کنید.</div>`;return}
- const t=steel/(rho*A*1e4)*10,a=t*aP/100,sd=t*sgP/100;
+ const t=steel/(rho*A*1e4)*10,a=t*aP/100,sd=t*Math.sqrt(sgP*sgP+uP*uP)/100;
  T.innerHTML=`${(t*1000).toFixed(1)} <small>µm</small> <small>میانگین (${t.toFixed(4)} mm)</small>`;
- R.innerHTML=drow('تعداد چهارتراش',`${nr} عدد (طول ${L}${L>800?' > ':' ≤ '}800 mm)`)+drow('وزن پالت'+(pw>0?' (ورودی دستی)':''),pal.toFixed(1)+' kg')+drow('وزن خالص ورق و قلع',net.toFixed(1)+' kg')+drow('باند واقعی ضخامت (قله تا دره)',`${(t-a).toFixed(4)} تا ${(t+a).toFixed(4)} mm`);
+ R.innerHTML=drow('تلرانس حداقل / حداکثر',`−${tmin}٪ / +${tmax}٪`)+drow('تعداد چهارتراش',`${nr} عدد (طول ${L}${L>800?' > ':' ≤ '}800 mm)`)+drow('وزن پالت'+(pw>0?' (ورودی دستی)':''),pal.toFixed(1)+' kg')+drow('وزن خالص ورق و قلع',net.toFixed(1)+' kg')+drow('باند واقعی ضخامت (قله تا دره)',`${(t-a).toFixed(4)} تا ${(t+a).toFixed(4)} mm`);
  const res=[gv('dc1'),gv('dc2')].filter(x=>x>0).map(nom=>{
-  const dev=(t-nom)/nom*100,lo=nom*(1-tol/100),hi=nom*(1+tol/100);
+  const dev=(t-nom)/nom*100,lo=nom*(1-tmin/100),hi=nom*(1+tmax/100);
   const out=Math.min(1,sd>0?tail((hi-t)/sd)+tail((t-lo)/sd):((t>hi||t<lo)?1:0));
-  const need=Math.abs(dev)+aP+uP,margin=tol-need;
+  const mid=(lo+hi)/2,devMid=(t-mid)/mid*100,need=Math.abs(devMid),margin=-need;
   let cls,tx;
   if(out<=0.05){cls='ok';tx='بیش از ۹۵٪ طول داخل تلرانس'}else if(out<=0.20){cls='warn';tx='۵ تا ۲۰٪ طول خارج از تلرانس'}else{cls='bad';tx='خارج از تلرانس'}
-  return {nom,dev,lo,hi,out,need,margin,cls,tx};
+  return {nom,dev,lo,hi,mid,devMid,out,need,margin,cls,tx};
  });
- C.innerHTML=res.map(r=>`<div class='cand'><h3><span>اسمی ${r.nom.toFixed(3)} mm</span><span class='tag ${r.cls}'>${r.tx}</span></h3>`+drow('انحراف میانگین',(r.dev>=0?'+':'')+r.dev.toFixed(2)+'%')+drow(`بازه مجاز (±${tol}%)`,`${r.lo.toFixed(4)} تا ${r.hi.toFixed(4)}`)+drow('سهم تقریبی طول خارج از تلرانس','≈ '+(r.out*100).toFixed(0)+'٪')+drow('انحراف + نوسان + عدم قطعیت',r.need.toFixed(2)+'%')+'</div>').join('');
+ C.innerHTML=res.map(r=>`<div class='cand'><h3><span>اسمی ${r.nom.toFixed(3)} mm</span><span class='tag ${r.cls}'>${r.tx}</span></h3>`+drow('انحراف میانگین',(r.dev>=0?'+':'')+r.dev.toFixed(2)+'%')+drow(`بازه مجاز (−${tmin}% تا +${tmax}%)`,`${r.lo.toFixed(4)} تا ${r.hi.toFixed(4)}`)+drow('سهم تقریبی طول خارج از تلرانس','≈ '+(r.out*100).toFixed(0)+'٪')+drow('وسط باند / فاصله میانگین از آن',`${r.mid.toFixed(4)} / ${r.devMid>=0?'+':''}${r.devMid.toFixed(2)}%`)+'</div>').join('');
  if(res.length){
   const b=res.slice().sort((x,y)=>x.out-y.out||y.margin-x.margin)[0];
   Rec.style.display='block';
@@ -239,7 +259,7 @@ function calcDecision(){
  }else Rec.style.display='none';
  if(res.length)drawChart(t,a,res.slice().sort((x,y)=>x.out-y.out||y.margin-x.margin)[0]);else $('dchart').innerHTML='';
 }
-['dm','dn','dL','dW','dc','drho','dpw','drb','drw','dpt','dc1','dc2','dtol','da','dsg','du'].forEach(id=>document.getElementById(id).addEventListener('input',calcDecision));
+['dm','dn','dL','dW','dc','drho','dpw','drb','drw','dpt','dc1','dc2','dtmin','da','dsg','du'].forEach(id=>document.getElementById(id).addEventListener('input',calcDecision));
 render();
 </script>
 <script>
